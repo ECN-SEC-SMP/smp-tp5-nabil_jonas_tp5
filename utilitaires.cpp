@@ -18,10 +18,10 @@ personne * creerPersonne (string nom, string prenom, int naissance,int sexe){
 };
 
 void mariage(personne *personne1, personne *personne2){
-
-    personne1->conjoints = personne2;
-    personne2->conjoints = personne1;
-
+    if (IsMarriagePossible){
+        personne1->conjoints = personne2;
+        personne2->conjoints = personne1;
+    }
 };
 
 bool memePersonne(personne *personne1, personne *personne2){
@@ -126,3 +126,11 @@ int hauteurArbre(personne *personne) {
   }
 };
 
+bool IsMarriagePossible(personne *personne1, personne *personne2){
+    if (IsAncetre(personne1,personne2) || IsFrereSoeur(personne1,personne2) || IsAncetre(personne2,personne1) || personne1->conjoints != nullptr || personne2->conjoints !=nullptr){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
