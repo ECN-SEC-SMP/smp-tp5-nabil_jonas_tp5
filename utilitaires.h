@@ -21,5 +21,11 @@ int nbGenerations(personne *personne);
 
 int hauteurArbre(personne *personne);
 
+void mariage(personne *personne1, personne *personne2);
+
+void affichageGenealogique(personne *personne);
+
+bool IsMarriagePossible(personne *personne1, personne *personne2);
+
 
 #endif

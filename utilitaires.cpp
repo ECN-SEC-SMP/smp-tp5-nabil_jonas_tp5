@@ -17,13 +17,6 @@ personne * creerPersonne (string nom, string prenom, int naissance,int sexe){
     return nouv;
 };
 
-void mariage(personne *personne1, personne *personne2){
-    if (IsMarriagePossible){
-        personne1->conjoints = personne2;
-        personne2->conjoints = personne1;
-    }
-};
-
 bool memePersonne(personne *personne1, personne *personne2){
 if ((personne1->nom == personne2->nom) && (personne1->prenom == personne2->prenom) && (personne1->naissance == personne2->naissance) && (personne1->sexe == personne2->sexe)){
     return true;
@@ -100,14 +93,16 @@ bool IsAncetre(personne *pers, personne *potAncetre){
 };
 
 int nbGenerations(personne *personne){
-    int compt = 1;
+    static int compt = 1;
     if (personne->pere == nullptr || personne->mere == nullptr){
         return compt;
     }
     return (nbGenerations(personne->mere) || nbGenerations(personne->pere)) + 1;
 };
 
-int hauteurArbre(personne *personne) {
+int tailleArbre(personne *personne) {
+    static int genf = 0;
+    static int genm = 0;
   if (personne == nullptr){
     return 0; // un arbre vide a une hauteur nulle
   }
@@ -116,14 +111,15 @@ int hauteurArbre(personne *personne) {
       return 1; // un arbre reduit à sa racine a une profondeur de 1
     }
     else {
-      if (hauteurArbre(personne->mere) >= hauteurArbre(personne->pere)){
-        return 1 + hauteurArbre(personne->mere);
+      if (tailleArbre(personne->mere) >= tailleArbre(personne->pere)){
+        genf =  1 + tailleArbre(personne->mere);
       }
       else{
-        return 1 + hauteurArbre(personne->pere);
+        genm = 1 + tailleArbre(personne->pere);
       }
     }
   }
+  return genm + genf;
 };
 
 bool IsMarriagePossible(personne *personne1, personne *personne2){
@@ -133,4 +129,27 @@ bool IsMarriagePossible(personne *personne1, personne *personne2){
     else{
         return true;
     }
-}
+};
+
+void affichageGenealogique(personne *personne){
+    affichagePersonne(personne);
+    while((personne->mere != nullptr)){
+        affichagePersonne(personne->mere);
+
+        personne->mere = personne->mere->mere;
+    }
+    while((personne->pere != nullptr)){
+        affichagePersonne(personne->pere);
+
+        personne->pere = personne->pere->pere;
+    }
+};
+
+void mariage(personne *personne1, personne *personne2){
+    if (IsMarriagePossible(personne1, personne2)){
+        personne1->conjoints = personne2;
+        personne2->conjoints = personne1;
+    }
+};
+
+
