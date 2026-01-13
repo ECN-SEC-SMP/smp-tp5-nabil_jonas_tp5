@@ -11,6 +11,8 @@ struct personne{
     int naissance;
     int sexe;
     personne *conjoints;
+    personne *pere;
+    personne *mere;
 };
 
 #endif
