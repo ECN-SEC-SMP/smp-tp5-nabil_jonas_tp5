@@ -106,3 +106,23 @@ int nbGenerations(personne *personne){
     }
     return (nbGenerations(personne->mere) || nbGenerations(personne->pere)) + 1;
 };
+
+int hauteurArbre(personne *personne) {
+  if (personne == nullptr){
+    return 0; // un arbre vide a une hauteur nulle
+  }
+  else {
+    if (personne->mere == nullptr && personne->pere == nullptr){
+      return 1; // un arbre reduit à sa racine a une profondeur de 1
+    }
+    else {
+      if (hauteurArbre(personne->mere) >= hauteurArbre(personne->pere)){
+        return 1 + hauteurArbre(personne->mere);
+      }
+      else{
+        return 1 + hauteurArbre(personne->pere);
+      }
+    }
+  }
+};
+

@@ -19,5 +19,7 @@ bool IsAncetre(personne *personne1, personne *personne2);
 
 int nbGenerations(personne *personne);
 
+int hauteurArbre(personne *personne);
+
 
 #endif
