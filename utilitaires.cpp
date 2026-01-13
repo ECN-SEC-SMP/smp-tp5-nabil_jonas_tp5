@@ -17,10 +17,9 @@ personne* creePersonne (string nom, string prenom,int annee_naissance,int sexe )
 
 }
 
-void Mariage (personne* mari, personne* femme){
-    mari->conjoint = femme;
-    femme->conjoint = mari;
-}
+
+
+
 
 void parente(personne* enfant, personne* pere, personne* mere){
     enfant->pere = pere;
@@ -63,7 +62,7 @@ void affichage(personne* bob){
 
 }
 
-void fraterie(personne* p1, personne* p2) {
+bool fraterie(personne* p1, personne* p2) {
     if (p1->pere == p2->pere && p1->mere == p2->mere) {
 
         if (p1->sexe == 1 && p2->sexe == 1) {
@@ -78,7 +77,9 @@ void fraterie(personne* p1, personne* p2) {
         else {
             cout << p1->prenom << " est la soeur de " << p2->prenom << endl;
         }
-
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -118,12 +119,94 @@ int nombrePersonne(personne* p1){
     int nbtemp2 = 0;
     
     if(p1==nullptr) return 0;
-    if(p1->pere==nullptr && p1->mere==nullptr) return 1;
+    
+
     if(p1->pere!=nullptr && p1->mere!=nullptr){
-        nbtemp1 = 1+generations(p1->pere);
-        nbtemp2 = 1+generations(p1->mere);
+        nbtemp1 = nombrePersonne(p1->pere);
+        nbtemp2 = nombrePersonne(p1->mere);
     }
    
 
-    return nbtemp1 + nbtemp2;
+    return 1 + nbtemp1 + nbtemp2;
+}
+
+bool peuventSeMarier(personne* p1, personne* p2){
+    if (ancetre(p1,p2)){
+        return false;
+    }
+    if(ancetre(p2,p1)){
+        return false;
+    }
+
+    if(fraterie(p1,p2)){
+        return false;
+    }
+
+    if(p1->conjoint!=nullptr){
+        return false;
+    }
+    if(p1->conjoint!=nullptr){
+        return false;
+    }
+    return true;
+}
+
+void Mariage (personne* mari, personne* femme){
+    if(peuventSeMarier(mari,femme)){
+        mari->conjoint = femme;
+        femme->conjoint = mari;
+        cout << "Ils peuvent se marier." << endl;
+    } else {
+        cout << "Ils ne peuvent pas se marier." << endl;
+    }
+    
+}
+
+void affichageArbre(personne* p1){
+    if(p1->pere == nullptr){
+
+    } else {
+        affichageArbre(p1->pere);
+   
+    }
+    if(p1->mere == nullptr){
+
+    } else {
+        affichageArbre(p1->mere);
+    }
+
+    cout<< p1->prenom << endl;
+    cout<< p1->nom << endl;
+    cout << "----------------------" << endl;
+    // cout<< p1->annee_naissance << endl;
+    // cout<< p1->sexe << endl;
+    // if (p1->conjoint != nullptr){
+    //     if (p1->sexe == 1){
+    //         cout << "Monsieur " << p1->prenom << " " << p1->nom << " épouse " << p1->conjoint->nom << endl;
+    //      } else {
+    //         cout << "Madame " << p1->prenom << " " << p1->nom << " épouse " << p1->conjoint->nom << endl;
+    //      }
+    // } else {
+    //     if (p1->sexe == 1){
+    //         cout << "Pas d'épouse" << endl;
+    //      }else{ 
+    //         cout << "Pas d'époux" << endl;
+    //      }
+    // }
+
+    // // Père
+    // if (p1->pere != nullptr) {
+    //     cout << "Père : " << p1->pere->prenom << " " << p1->pere->nom << endl;
+    // } else {
+    //     cout << "Pas de père renseigné" << endl;
+    // }
+
+    // // Mère
+    // if (p1->mere != nullptr) {
+    //     cout << "Mère : " << p1->mere->prenom << " " << p1->mere->nom << endl;
+    // } else {
+    //     cout << "Pas de mère renseignée" << endl;
+    // }
+
+    
 }
