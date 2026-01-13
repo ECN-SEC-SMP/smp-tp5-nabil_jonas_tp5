@@ -98,3 +98,11 @@ bool IsAncetre(personne *pers, personne *potAncetre){
     }
     return IsAncetre(pers->mere,potAncetre) || IsAncetre(pers->pere,potAncetre);
 };
+
+int nbGenerations(personne *personne){
+    int compt = 1;
+    if (personne->pere == nullptr || personne->mere == nullptr){
+        return compt;
+    }
+    return (nbGenerations(personne->mere) || nbGenerations(personne->pere)) + 1;
+};

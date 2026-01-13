@@ -17,5 +17,7 @@ bool memePersonne(personne *personne1, personne *personne2);
 
 bool IsAncetre(personne *personne1, personne *personne2);
 
+int nbGenerations(personne *personne);
+
 
 #endif

@@ -63,6 +63,8 @@ int main() {
     } else {
         cout << "INFO : Marie n'est pas detectee comme ancetre." << endl;
     }
+
+    cout << "Gernation nombre :" << nbGenerations(enfant1) << endl;;
     // Nettoyage de la mémoire
     delete p1;
     delete p2;
