@@ -8,8 +8,8 @@ int main() {
     cout << "--- Test de creation de personnes ---" << endl;
     
     // 1. On crée deux personnes
-    personne* p1 = creerPersonne("Dupont", "Jean", 1990, 0);
-    personne* p2 = creerPersonne("Durand", "Marie", 1992, 1);
+    personne* p1 = creerPersonne("Dupont", "Jean", 1990, 1);
+    personne* p2 = creerPersonne("Durand", "Marie", 1992, 2);
 
     // 2. On affiche leur état avant le mariage
     cout << "Avant le mariage :" << endl;

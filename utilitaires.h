@@ -1,8 +1,9 @@
 #include <iostream>
 #include <cstring>
 #include "type_def.h"
-#ifndef UTILITAIRES.H
-#define UTILITAIRES.H
+#ifndef UTILITAIRES
+#define UTILITAIRES
+using namespace std;
 
 personne * creerPersonne (string nom, string prenom, int naissance,int sexe);
 

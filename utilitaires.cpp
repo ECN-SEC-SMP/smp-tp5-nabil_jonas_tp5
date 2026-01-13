@@ -4,8 +4,8 @@ using namespace std;
 #include <cstring>
 
 personne * creerPersonne (string nom, string prenom, int naissance,int sexe){
-    personne* nouv;
-
+    personne* nouv = new personne;
+    
     nouv->nom = nom;
     nouv->prenom = prenom;
     nouv->naissance = naissance;
@@ -29,23 +29,28 @@ void affichagePersonne(personne *personne){
     string info2;
     string sexe2;
 
-    if (personne->sexe == 1){
+    if (personne->conjoints == nullptr){
+        cout << personne->prenom + " " + personne->nom << " est célibataire" << endl;
+        return;
+    }
+    if (personne->sexe == 2){
         sexe1 = "Madame ";
         info1 = "épouse ";
     }
     else{
-        sexe1 = "Masculin ";
+        sexe1 = "Monsieur ";
         info1 = "époux ";
     }
-    if (personne->conjoints->sexe == 1){
+
+    if (personne->conjoints->sexe == 2){
         sexe2 = "Madame ";
         info2 = "épouse ";
     }
     else{
-        sexe2 = "Masculin ";
+        sexe2 = "Monsieur ";
         info2 = "époux ";
     }
 
-    cout << sexe1 + personne->prenom + " " + personne->nom + " " + info1  << " " + personne->conjoints->nom;
+    cout << sexe1 + personne->prenom + " " + personne->nom + " " + info1  << " " + personne->conjoints->nom << endl;
     
 };

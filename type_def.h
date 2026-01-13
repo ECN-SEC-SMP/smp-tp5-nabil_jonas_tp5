@@ -1,10 +1,11 @@
 #include <cstring>
 #include <iostream>
 using namespace std;
-#ifndef TYPE_DEF.H
-#define TYPE_DEF.H
+#ifndef TYPE_DEF
+#define TYPE_DEF
 
-typedef struct personne{
+// en C ajouter : typedef
+struct personne{
     string nom;
     string prenom;
     int naissance;
