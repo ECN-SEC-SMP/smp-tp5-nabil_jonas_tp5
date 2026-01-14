@@ -65,7 +65,7 @@ int main() {
     }
 
     cout << "Gernation nombre :" << nbGenerations(enfant1) << endl;
-
+    cout <<endl;
     cout << "--- 5. Affichage Genealogique" << endl;
 
     affichageGenealogique(p2);

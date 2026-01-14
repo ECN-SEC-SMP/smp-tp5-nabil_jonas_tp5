@@ -132,17 +132,28 @@ bool IsMarriagePossible(personne *personne1, personne *personne2){
 };
 
 void affichageGenealogique(personne *personne){
-    affichagePersonne(personne);
-    while((personne->mere != nullptr)){
-        affichagePersonne(personne->mere);
 
-        personne->mere = personne->mere->mere;
+    if (personne->mere != nullptr){
+        return affichageGenealogique(personne->mere);
+        personne = personne->mere;
     }
-    while((personne->pere != nullptr)){
-        affichagePersonne(personne->pere);
 
-        personne->pere = personne->pere->pere;
+    if(personne->pere != nullptr){
+        return affichageGenealogique(personne->pere);
+        personne = personne->mere;
     }
+
+    cout << endl;
+    cout << "------------------------------------\n";
+    cout << personne->nom << endl;
+    cout << personne->prenom << endl;
+    cout << "-------------------------------------\n";
+    cout << "|" << endl;
+    cout << "V" << endl;
+
+    personne = personne->mere;
+    personne = personne->pere;
+
 };
 
 void mariage(personne *personne1, personne *personne2){
