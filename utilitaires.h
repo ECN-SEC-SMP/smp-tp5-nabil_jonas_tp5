@@ -12,3 +12,6 @@ int generations(personne* p1);
 int nombrePersonne(personne* p1);
 bool peuventSeMarier(personne* p1, personne* p2);
 void affichageArbre(personne* p1);
+
+void sauvegardeArbre(personne* racine, string nomFichier);
+personne* lectureArbre(string nomFichier);

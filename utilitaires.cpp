@@ -1,6 +1,10 @@
 #include "type_def.h"
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <vector>
+#include <map>
+#include <set>
 
 using namespace std;
 
@@ -63,24 +67,24 @@ void affichage(personne* bob){
 }
 
 bool fraterie(personne* p1, personne* p2) {
-    if (p1->pere == p2->pere && p1->mere == p2->mere) {
+    // Sécurité de base
+    if (p1 == nullptr || p2 == nullptr) return false;
 
-        if (p1->sexe == 1 && p2->sexe == 1) {
-            cout << p1->prenom << " est le frère de " << p2->prenom << endl;
-        }
-        else if (p1->sexe == 1 && p2->sexe == 0) {
-            cout << p1->prenom << " est le frère de " << p2->prenom << endl;
-        }
-        else if (p1->sexe == 0 && p2->sexe == 1) {
-            cout << p1->prenom << " est la soeur de " << p2->prenom << endl;
-        }
-        else {
-            cout << p1->prenom << " est la soeur de " << p2->prenom << endl;
-        }
-        return true;
-    } else {
+    // Si l'un des deux n'a pas de père ou de mère enregistré (cas des racines/grands-parents),
+    // ils ne peuvent pas être considérés comme frères/sœurs via ce lien.
+    if (p1->pere == nullptr || p2->pere == nullptr || 
+        p1->mere == nullptr || p2->mere == nullptr) {
         return false;
     }
+
+    // Ils sont frères/sœurs SI : Même père ET Même mère
+    if (p1->pere == p2->pere && p1->mere == p2->mere) {
+        // Optionnel : Vous pouvez garder ou enlever le cout selon vos préférences
+        cout << p1->prenom << " est le frere/soeur de " << p2->prenom << endl;
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -145,21 +149,36 @@ bool peuventSeMarier(personne* p1, personne* p2){
     if(p1->conjoint!=nullptr){
         return false;
     }
-    if(p1->conjoint!=nullptr){
+    if(p2->conjoint!=nullptr){
         return false;
     }
     return true;
 }
 
-void Mariage (personne* mari, personne* femme){
-    if(peuventSeMarier(mari,femme)){
+void Mariage(personne* mari, personne* femme) {
+    // 1. Sécurité : Vérifier que les personnes existent
+    if (mari == nullptr || femme == nullptr) {
+        cout << "Erreur : Impossible de marier une personne inexistante (pointeur NULL)." << endl;
+        return;
+    }
+
+    // 2. Sécurité : On ne peut pas se marier avec soi-même
+    if (mari == femme) {
+        cout << "Mariage impossible : Une personne ne peut pas se marier avec elle-meme." << endl;
+        return;
+    }
+
+    // 3. Vérification des règles (inceste, bigamie...)
+    if (peuventSeMarier(mari, femme)) {
+        // Application du mariage
         mari->conjoint = femme;
         femme->conjoint = mari;
-        cout << "Ils peuvent se marier." << endl;
+        
+        cout << "Mariage reussi entre " << mari->prenom << " et " << femme->prenom << "." << endl;
     } else {
-        cout << "Ils ne peuvent pas se marier." << endl;
+        cout << "Mariage impossible entre " << mari->prenom << " et " << femme->prenom 
+             << " (Lien de parente ou deja marie)." << endl;
     }
-    
 }
 
 void affichageArbre(personne* p1){
@@ -208,5 +227,149 @@ void affichageArbre(personne* p1){
     //     cout << "Pas de mère renseignée" << endl;
     // }
 
+
+}
+
+void collecterToutesLesPersonnes(personne* p, std::set<personne*>& visites, std::vector<personne*>& liste) {
+    if (p == nullptr || visites.find(p) != visites.end()) {
+        return; // Déjà traité ou vide
+    }
     
+    visites.insert(p);
+    liste.push_back(p);
+    
+    // On explore récursivement les liens
+    collecterToutesLesPersonnes(p->pere, visites, liste);
+    collecterToutesLesPersonnes(p->mere, visites, liste);
+    collecterToutesLesPersonnes(p->conjoint, visites, liste);
+}
+
+// =========================================================
+// VERSION CORRIGEE : PRIORITE AU SANG
+// =========================================================
+
+// --- FONCTIONS AUXILIAIRES ---
+
+string formatRoleSimple(int generation, int sexe) {
+    if (generation == 0) return "Enfant"; // Plus clair que "Enfant"
+    if (generation == 1) return (sexe == 1) ? "Pere" : "Mere";
+    if (generation == 2) return (sexe == 1) ? "Grand-Pere" : "Grand-Mere";
+    return (sexe == 1) ? "Arriere-GP" : "Arriere-GM";
+}
+
+// Cette fonction ne parcourt QUE les parents (le sang)
+void mapperRolesSang(personne* p, std::map<personne*, string>& mapRoles, int gen) {
+    if (p == nullptr) return;
+
+    // On assigne le rôle seulement s'il n'existe pas encore
+    if (mapRoles.find(p) == mapRoles.end()) {
+        mapRoles[p] = formatRoleSimple(gen, p->sexe);
+    }
+
+    // On monte vers les ancêtres uniquement
+    mapperRolesSang(p->pere, mapRoles, gen + 1);
+    mapperRolesSang(p->mere, mapRoles, gen + 1);
+}
+
+// --- SAUVEGARDE AMELIOREE ---
+
+void sauvegardeArbre(personne* racine, string nomFichier) {
+    if (racine == nullptr) {
+        cout << "Erreur : Racine vide." << endl;
+        return;
+    }
+
+    // 1. Récupérer tout le monde
+    std::set<personne*> visites;
+    std::vector<personne*> tous;
+    collecterToutesLesPersonnes(racine, visites, tous);
+
+    // 2. Assigner les IDs
+    std::map<personne*, int> ptrVersId;
+    int idCpt = 1;
+    for (personne* p : tous) ptrVersId[p] = idCpt++;
+
+    // 3. Calculer les Rôles (NOUVELLE LOGIQUE)
+    std::map<personne*, string> roles;
+    
+    // Etape A : On parcourt d'abord les ancêtres (pour que Maman soit "Mere" et pas "Conjoint")
+    mapperRolesSang(racine, roles, 0);
+
+    // Etape B : On regarde les autres (Cousins mariés, Conjoints de GP...)
+    for (personne* p : tous) {
+        // Si la personne a déjà un rôle (ex: Mere), on ne touche à rien.
+        if (roles.find(p) != roles.end()) continue;
+
+        // Sinon, on regarde si c'est un conjoint de quelqu'un
+        if (p->conjoint != nullptr) {
+            // Si son mari/femme a un rôle, on peut dire "Conjoint de X" ou juste "Conjoint"
+            roles[p] = "Conjoint"; 
+        } else {
+            roles[p] = "Parente"; // Ni ancêtre, ni conjoint (ex: cousine non mariée)
+        }
+    }
+
+    // 4. Ecriture
+    ofstream fichier(nomFichier);
+    if (!fichier.is_open()) return;
+
+    fichier << tous.size() << " " << ptrVersId[racine] << endl;
+    fichier << "# ID Role Nom Prenom Annee Sexe [ID_Pere ID_Mere ID_Conjoint]" << endl;
+
+    for (personne* p : tous) {
+        int idP = (p->pere) ? ptrVersId[p->pere] : 0;
+        int idM = (p->mere) ? ptrVersId[p->mere] : 0;
+        int idC = (p->conjoint) ? ptrVersId[p->conjoint] : 0;
+        
+        string roleStr = (roles.count(p) ? roles[p] : "Autre");
+
+        fichier << ptrVersId[p] << " "
+                << roleStr << " "
+                << p->nom << " "
+                << p->prenom << " "
+                << p->annee_naissance << " "
+                << p->sexe << " "
+                << idP << " " << idM << " " << idC << endl;
+    }
+    fichier.close();
+    cout << "Sauvegarde terminee dans : " << nomFichier << endl;
+}
+
+personne* lectureArbre(string nomFichier) {
+    ifstream fichier(nomFichier);
+    if (!fichier.is_open()) return nullptr;
+
+    int nb, idRacine;
+    string buffer; 
+    
+    if (!(fichier >> nb >> idRacine)) return nullptr;
+    getline(fichier, buffer); 
+    getline(fichier, buffer); 
+
+    std::map<int, personne*> idVersPtr;
+    struct Relations { int p, m, c; };
+    std::map<int, Relations> mapRel;
+
+    // PASSE 1 : Création
+    for (int i = 0; i < nb; i++) {
+        int id, annee, sexe, idP, idM, idC;
+        string nom, prenom, roleInutile;
+
+        // On lit tout, y compris les IDs à la fin
+        fichier >> id >> roleInutile >> nom >> prenom >> annee >> sexe >> idP >> idM >> idC;
+
+        personne* p = creePersonne(nom, prenom, annee, sexe);
+        idVersPtr[id] = p;
+        mapRel[id] = {idP, idM, idC};
+    }
+
+    // PASSE 2 : Reconstruction des liens (C'est ça qui répare votre erreur)
+    for (auto const& [id, p] : idVersPtr) {
+        if (mapRel[id].p != 0) p->pere = idVersPtr[mapRel[id].p];
+        if (mapRel[id].m != 0) p->mere = idVersPtr[mapRel[id].m];
+        if (mapRel[id].c != 0) p->conjoint = idVersPtr[mapRel[id].c];
+    }
+
+    cout << "Arbre charge avec succes (Liens restaures)." << endl;
+    return idVersPtr[idRacine];
 }
