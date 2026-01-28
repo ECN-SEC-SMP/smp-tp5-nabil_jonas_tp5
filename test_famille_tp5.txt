@@ -1,0 +1,10 @@
+8 1
+# ID Role Nom Prenom Annee Sexe [ID_Pere ID_Mere ID_Conjoint]
+1 Enfant Bernard Paul 2000 1 2 5 8
+2 Pere Bernard Marc 1970 1 3 4 5
+3 Grand-Pere Bernard Louis 1940 1 0 0 4
+4 Grand-Mere Bernard Anne 1942 0 0 0 3
+5 Mere Petit Sophie 1972 0 6 7 2
+6 Grand-Pere Petit Jean 1938 1 0 0 0
+7 Grand-Mere Petit Marie 1941 0 0 0 0
+8 Conjoint Petit Claire 2001 0 6 7 1
